@@ -9,7 +9,10 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/recyclerview_movies"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layoutManager="android.support.v7.widget.GridLayoutManager"
+        tools:listitem="@layout/movie_grid_item"/>
 
     <TextView
         android:id="@+id/tv_error_message_display"
