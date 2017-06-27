@@ -1,5 +1,6 @@
 package rodab.ciencias.unam.mx.android.popularmovies;
 
+import android.content.Intent;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -56,7 +57,9 @@ public class MainActivity extends AppCompatActivity
     // @TODO - Modificar para que haga alguna accion.
     @Override
     public void onClick(Movie data) {
-        Toast.makeText(this, "Pelicula presionada", Toast.LENGTH_LONG);
+        Intent intent = new Intent(this, ShowMovieActivity.class);
+        intent.putExtra(Intent.EXTRA_TEXT, data.getParserText());
+        startActivity(intent);
     }
 
     private void showErrorMessage() {

@@ -78,4 +78,24 @@ public class Movie {
                 this.getDate();
     }
 
+    public String getParserText() {
+        return (this.getId() + "-#-" +
+                this.getTitle() + "-#-" +
+                this.getUrlImage() + "-#-" +
+                this.getSynopsis() + "-#-" +
+                this.getRating() + "-#-" +
+                this.getDate());
+    }
+
+    public static Movie getMovieFromParserText(String text) {
+        String regex = new String("-#-");
+        String[] tokens = text.split(regex);
+        if(tokens.length != 6)
+            return null;
+        return (new Movie(Integer.parseInt(tokens[0]),
+                        tokens[1],tokens[2],
+                        tokens[3],Double.parseDouble(tokens[4]),
+                        tokens[5]));
+    }
+
 }
