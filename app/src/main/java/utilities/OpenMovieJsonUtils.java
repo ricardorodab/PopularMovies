@@ -13,6 +13,51 @@ import java.net.HttpURLConnection;
  */
 
 public class OpenMovieJsonUtils {
+
+    private static final String URL_YOUTUBE = "https://www.youtube.com/watch?v=";
+
+    public static String[] getSimpleVideosLinkFromJson(String jsonStr)
+            throws JSONException {
+        final String LIST = "results";
+
+        final String OWM_MESSAGE_CODE = "cod";
+
+        String[] parsedMovieData = null;
+
+        JSONObject movieJson = new JSONObject(jsonStr);
+
+        /* Is there an error? */
+        if (movieJson.has(OWM_MESSAGE_CODE)) {
+            int errorCode = movieJson.getInt(OWM_MESSAGE_CODE);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    /* Location invalid */
+                    return null;
+                default:
+                    /* Server probably down */
+                    return null;
+            }
+        }
+
+        JSONArray movieArray = movieJson.getJSONArray(LIST);
+
+        parsedMovieData = new String[movieArray.length()];
+
+        for (int i = 0; i < movieArray.length(); i++) {
+            String keyVideo;
+
+            /* Get the JSON object representing the movie */
+            JSONObject movie = movieArray.getJSONObject(i);
+            keyVideo = movie.getString("key");
+            parsedMovieData[i] = URL_YOUTUBE + keyVideo;
+        }
+
+        return parsedMovieData;
+    }
+
     /**
      * This method parses JSON from a web response and returns an array of Strings
      * describing the weather over various days from the forecast.

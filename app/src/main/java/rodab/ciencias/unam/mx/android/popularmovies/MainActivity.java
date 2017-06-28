@@ -54,7 +54,6 @@ public class MainActivity extends AppCompatActivity
 
     }
 
-    // @TODO - Modificar para que haga alguna accion.
     @Override
     public void onClick(Movie data) {
         Intent intent = new Intent(this, ShowMovieActivity.class);
