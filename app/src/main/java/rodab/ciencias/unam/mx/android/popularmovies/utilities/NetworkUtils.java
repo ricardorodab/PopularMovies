@@ -10,9 +10,17 @@ import java.net.URL;
 import java.util.Scanner;
 
 /**
- * Created by ricardo_rodab on 27/06/17.
+ * @author Jose Ricardo Rodriguez-Abreu
+ * @version 1.0
+ * @since Jun 26 2017.
+ * <p>
+ *     A contract class.
+ * </p>
+ *
+ * <p>
+ *     For constant variables like url's and names for the DB.
+ * </p>
  */
-
 public class NetworkUtils {
 
     public static final String URL_IMAGE = "http://image.tmdb.org/t/p/w185";

@@ -22,6 +22,18 @@ import rodab.ciencias.unam.mx.android.popularmovies.utilities.Movie;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.OpenMovieJsonUtils;
 
+/**
+ * @author Jose Ricardo Rodriguez-Abreu
+ * @version 1.0
+ * @since Jun 26 2017.
+ * <p>
+ *     Main class of the app.
+ * </p>
+ *
+ * <p>
+ *     The app start with this class.
+ * </p>
+ */
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.MovieAdapterOnClickHandler{
 
@@ -52,11 +64,13 @@ public class MainActivity extends AppCompatActivity
         loadMovieData();
     }
 
+    //We get all the information in a Cursor (in the DB).
     private Cursor getAllFavMovies() {
         return mDb.query(MovieContract.RowEntry.TABLE_NAME,
                 null, null, null, null, null, null);
     }
 
+    //The data is loaded in a Task.
     private void loadMovieData() {
         errorMsg.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
@@ -64,12 +78,17 @@ public class MainActivity extends AppCompatActivity
         new FetchMovieTask().execute(bool);
     }
 
+    //This private method start a task to get the db data.
     private void loadFavoritesData() {
         errorMsg.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
         new FetchFavoritesTask().execute();
     }
 
+    /**
+     * The action of the app when the user "clicks" a film picture.
+     * @param data - the data of the film that was pointed.
+     */
     @Override
     public void onClick(Movie data) {
         Intent intent = new Intent(this, ShowMovieActivity.class);
@@ -77,6 +96,7 @@ public class MainActivity extends AppCompatActivity
         startActivity(intent);
     }
 
+    // We can reuse code.
     private void showErrorMessage() {
         /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
@@ -184,4 +204,4 @@ public class MainActivity extends AppCompatActivity
             mMoviesAdapter.setMovieData(null);
         }
     }
-}
+} //End of MainActivity.java

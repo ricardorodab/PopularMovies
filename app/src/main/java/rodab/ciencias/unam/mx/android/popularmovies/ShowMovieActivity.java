@@ -30,6 +30,18 @@ import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.OpenMovieJsonUtils;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.Review;
 
+/**
+ * @author Jose Ricardo Rodriguez-Abreu
+ * @version 1.0
+ * @since Jun 26 2017.
+ * <p>
+ *     A contract class.
+ * </p>
+ *
+ * <p>
+ *     For constant variables like url's and names for the DB.
+ * </p>
+ */
 public class ShowMovieActivity extends AppCompatActivity
                 implements ShowMovieAdapter.ShowMovieAdapterOnClickHandler,
                             ShowReviewsAdapter.ShowReviewsAdapterOnClickHandler {

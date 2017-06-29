@@ -7,13 +7,34 @@ import org.json.JSONObject;
 import java.net.HttpURLConnection;
 
 /**
- * Created by ricardo_rodab on 27/06/17.
+ * @author Jose Ricardo Rodriguez-Abreu
+ * @version 1.0
+ * @since Jun 26 2017.
+ * <p>
+ *     A parser Json data.
+ * </p>
+ *
+ * <p>
+ *     All the data of the apy moviedb is in Json so it was fundamental to parser the info.
+ * </p>
  */
-
 public class OpenMovieJsonUtils {
 
+    /**
+     * A URL to youtube videos prefix.
+     */
     private static final String URL_YOUTUBE = "https://www.youtube.com/watch?v=";
 
+    /**
+     * This method parses JSON from a web response and returns an array of Strings
+     * describing the weather over various days from the forecast.
+     *
+     * @param jsonStr JSON response from server
+     *
+     * @return Array of Strings describing videos of youtube.
+     *
+     * @throws JSONException If JSON data cannot be properly parsed
+     */
     public static String[] getSimpleVideosLinkFromJson(String jsonStr)
             throws JSONException {
         final String LIST = "results";
@@ -59,14 +80,10 @@ public class OpenMovieJsonUtils {
     /**
      * This method parses JSON from a web response and returns an array of Strings
      * describing the weather over various days from the forecast.
-     * <p/>
-     * Later on, we'll be parsing the JSON into structured data within the
-     * getFullWeatherDataFromJson function, leveraging the data we have stored in the JSON. For
-     * now, we just convert the JSON into human-readable strings.
      *
      * @param jsonStr JSON response from server
      *
-     * @return Array of Strings describing weather data
+     * @return Array of Movie with several data information of everyone.
      *
      * @throws JSONException If JSON data cannot be properly parsed
      */
@@ -122,7 +139,16 @@ public class OpenMovieJsonUtils {
         return parsedMovieData;
     }
 
-
+    /**
+     * This method parses JSON from a web response and returns an array of Strings
+     * describing the weather over various days from the forecast.
+     *
+     * @param jsonStr JSON response from server
+     *
+     * @return Array of Review of a movie.
+     *
+     * @throws JSONException If JSON data cannot be properly parsed
+     */
     public static Review[] getSimpleReviewLinkFromJson(String jsonStr) throws JSONException {
         final String LIST = "results";
 
@@ -164,4 +190,4 @@ public class OpenMovieJsonUtils {
         }
         return parsedMovieData;
     }
-}
+} //End of OpenMovieJsonUtils.java

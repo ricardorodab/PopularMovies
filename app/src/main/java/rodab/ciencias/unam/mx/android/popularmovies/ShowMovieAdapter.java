@@ -9,9 +9,17 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 /**
- * Created by ricardo_rodab on 27/06/17.
+ * @author Jose Ricardo Rodriguez-Abreu
+ * @version 1.0
+ * @since Jun 26 2017.
+ * <p>
+ *     A contract class.
+ * </p>
+ *
+ * <p>
+ *     For constant variables like url's and names for the DB.
+ * </p>
  */
-
 public class ShowMovieAdapter extends RecyclerView.Adapter<ShowMovieAdapter.ShowMovieAdapterViewHolder> {
 
     public interface ShowMovieAdapterOnClickHandler {

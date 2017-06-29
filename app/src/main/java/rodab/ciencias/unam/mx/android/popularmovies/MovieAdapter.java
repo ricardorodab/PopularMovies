@@ -15,9 +15,17 @@ import rodab.ciencias.unam.mx.android.popularmovies.utilities.Movie;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
 
 /**
- * Created by ricardo_rodab on 27/06/17.
+ * @author Jose Ricardo Rodriguez-Abreu
+ * @version 1.0
+ * @since Jun 26 2017.
+ * <p>
+ *   The adapter class for MainActivity.
+ * </p>
+ *
+ * <p>
+ *     To use the recyclerview we create this class.
+ * </p>
  */
-
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     public interface MovieAdapterOnClickHandler {
