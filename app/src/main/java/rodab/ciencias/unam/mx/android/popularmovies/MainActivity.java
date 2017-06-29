@@ -37,12 +37,12 @@ import rodab.ciencias.unam.mx.android.popularmovies.utilities.OpenMovieJsonUtils
 public class MainActivity extends AppCompatActivity
         implements MovieAdapter.MovieAdapterOnClickHandler{
 
-    private RecyclerView mRecyclerView;
-    private TextView errorMsg;
-    private MovieAdapter mMoviesAdapter;
-    private ProgressBar mLoading;
-    private boolean popular;
-    private SQLiteDatabase mDb;
+    protected RecyclerView mRecyclerView;
+    protected TextView errorMsg;
+    protected MovieAdapter mMoviesAdapter;
+    protected ProgressBar mLoading;
+    protected boolean popular;
+    protected SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     //We get all the information in a Cursor (in the DB).
-    private Cursor getAllFavMovies() {
+    protected Cursor getAllFavMovies() {
         return mDb.query(MovieContract.RowEntry.TABLE_NAME,
                 null, null, null, null, null, null);
     }
@@ -75,14 +75,14 @@ public class MainActivity extends AppCompatActivity
         errorMsg.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
         Boolean bool = new Boolean(popular);
-        new FetchMovieTask().execute(bool);
+        new FetchMovieTask(this, new FetchMovieTaskCompleteListener()).execute(bool);
     }
 
     //This private method start a task to get the db data.
     private void loadFavoritesData() {
         errorMsg.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
-        new FetchFavoritesTask().execute();
+        new FetchFavoritesTask(this, new FetchFavoriteTaskCompleteListener()).execute();
     }
 
     /**
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity
     }
 
     // We can reuse code.
-    private void showErrorMessage() {
+    protected void showErrorMessage() {
         /* First, hide the currently visible data */
         mRecyclerView.setVisibility(View.INVISIBLE);
         /* Then, show the error */
@@ -137,71 +137,11 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
-    public class FetchMovieTask extends AsyncTask<Boolean, Void, Movie[]> {
+    public class FetchMovieTaskCompleteListener implements AsyncTaskCompleteListener<Movie[]>
+    {@Override public void onTaskComplete(Movie[] result) {}}
 
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoading.setVisibility(View.VISIBLE);
-        }
+    public class FetchFavoriteTaskCompleteListener implements AsyncTaskCompleteListener<Void>
+    {@Override public void onTaskComplete(Void result) {}}
 
-        @Override
-        protected Movie[] doInBackground(Boolean... params) {
-            if (params.length == 0) {
-                return null;
-            }
 
-            boolean reciente = params[0].booleanValue();
-            URL movieRequestUrl = NetworkUtils.buildUrl(reciente);
-            try {
-                String jsonMovieResponse = NetworkUtils
-                        .getResponseFromHttpUrl(movieRequestUrl);
-
-               Movie[] simpleJsonVideoData = OpenMovieJsonUtils
-                        .getSimpleMoviesFromJson(jsonMovieResponse);
-
-                return simpleJsonVideoData;
-
-            } catch (Exception e) {
-                e.printStackTrace();
-                return null;
-            }
-        }
-
-        @Override
-        protected void onPostExecute(Movie[] movieData) {
-            mLoading.setVisibility(View.INVISIBLE);
-            if (movieData != null) {
-                errorMsg.setVisibility(View.INVISIBLE);
-                mRecyclerView.setVisibility(View.VISIBLE);
-                mMoviesAdapter.setCoursor(null);
-                mMoviesAdapter.setMovieData(movieData);
-            } else {
-                showErrorMessage();
-            }
-        }
-    }
-
-   public class FetchFavoritesTask extends AsyncTask<Void, Void, Void> {
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            mLoading.setVisibility(View.VISIBLE);
-        }
-
-        @Override
-        protected Void doInBackground(Void... params) {
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void empty) {
-            mLoading.setVisibility(View.INVISIBLE);
-            errorMsg.setVisibility(View.INVISIBLE);
-            mRecyclerView.setVisibility(View.VISIBLE);
-            mMoviesAdapter.setCoursor(getAllFavMovies());
-            mMoviesAdapter.setMovieData(null);
-        }
-    }
 } //End of MainActivity.java

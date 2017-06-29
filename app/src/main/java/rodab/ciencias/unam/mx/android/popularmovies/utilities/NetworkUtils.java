@@ -29,12 +29,12 @@ public class NetworkUtils {
     private static final String URL_REVIEWS = "/reviews?api_key=";
     private static final String FORMAT_PARAM = "mode";
     private static final String format = "json";
-    private static final String KEY = "";
+    //private static final String KEY = context.getString(R.string.THE_MOVIE_DB_API_TOKEN);
 
     public static final boolean VIDEOS = true;
     public static final boolean REVIEWS = false;
 
-    public static URL buildUrl(boolean popular) {
+    public static URL buildUrl(boolean popular, String KEY) {
         String extension = popular ? "/popular?api_key=" + KEY : "/top_rated?api_key=" + KEY;
         Uri buildUri = Uri.parse(URL_MOVIE + extension).buildUpon()
                 .appendQueryParameter(FORMAT_PARAM, format).build();
@@ -47,7 +47,7 @@ public class NetworkUtils {
         return url;
     }
 
-    public static URL buildUrlVideoReviews(boolean videos, Movie movie) {
+    public static URL buildUrlVideoReviews(boolean videos, Movie movie, String KEY) {
         String urlFinal = URL_MOVIE + "/" + movie.getId();
         urlFinal = videos ? urlFinal.concat(URL_VIDEOS + KEY) :
                             urlFinal.concat(URL_REVIEWS + KEY);

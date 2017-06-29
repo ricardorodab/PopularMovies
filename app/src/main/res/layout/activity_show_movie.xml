@@ -8,7 +8,7 @@
 
     <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent" >
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -18,11 +18,11 @@
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="match_parent"
-            android:layout_height="97sp"
-            android:textSize="30sp"
+            android:layout_height="@dimen/quarter_height"
+            android:textSize="@dimen/big_tittle"
             android:textColor="@color/colorWhite"
-            android:padding="15sp"
-            android:background="#138787" />
+            android:padding="@dimen/medium_tittle"
+            android:background="@color/beautiful_unknow_color" />
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -32,8 +32,8 @@
 
             <ImageView
                 android:id="@+id/imageView"
-                android:layout_width="204sp"
-                android:layout_height="169sp"
+                android:layout_width="@dimen/image_width_show"
+                android:layout_height="@dimen/image_height_show"
                 android:padding="1sp" />
 
             <LinearLayout
@@ -48,14 +48,14 @@
                     android:layout_marginTop="2sp"
                     android:layout_weight="1.00"
                     android:padding="2sp"
-                    android:textSize="20dp" />
+                    android:textSize="@dimen/twenty_sp" />
 
                 <TextView
                     android:id="@+id/tv_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.67"
-                    android:textSize="15sp" />
+                    android:textSize="@dimen/medium_tittle" />
             </LinearLayout>
 
 

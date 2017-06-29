@@ -207,10 +207,12 @@ public class ShowMovieActivity extends AppCompatActivity
 
             Movie localMovie = params[0];
             URL movieRequestUrl = NetworkUtils
-                    .buildUrlVideoReviews(NetworkUtils.VIDEOS, localMovie);
+                    .buildUrlVideoReviews(NetworkUtils.VIDEOS, localMovie,getApplicationContext()
+                            .getString(R.string.THE_MOVIE_DB_API_TOKEN));
 
             URL reviewsRequestUrl = NetworkUtils
-                    .buildUrlVideoReviews(NetworkUtils.REVIEWS, localMovie);
+                    .buildUrlVideoReviews(NetworkUtils.REVIEWS, localMovie,getApplicationContext()
+                            .getString(R.string.THE_MOVIE_DB_API_TOKEN));
             try {
                 String jsonMovieResponse = NetworkUtils
                         .getResponseFromHttpUrl(movieRequestUrl);

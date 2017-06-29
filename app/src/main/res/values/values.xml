@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="quarter_height">97sp</dimen>
+    <dimen name="image_width_show">204sp</dimen>
+    <dimen name="image_height_show">169sp</dimen>
+
+    <dimen name="big_tittle">30sp</dimen>
+    <dimen name="twenty_sp">20sp</dimen>
+    <dimen name="medium_tittle">15sp</dimen>
+
+</resources>
