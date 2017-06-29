@@ -1,15 +1,12 @@
 package rodab.ciencias.unam.mx.android.popularmovies;
 
 import android.content.Context;
-import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
-import utilities.NetworkUtils;
 
 /**
  * Created by ricardo_rodab on 27/06/17.
@@ -43,6 +40,7 @@ public class ShowMovieAdapter extends RecyclerView.Adapter<ShowMovieAdapter.Show
     }
 
     private String[] videoLinks;
+    private String[] reviews;
     private final ShowMovieAdapterOnClickHandler showMovieAdapterOnClickHandler;
 
     public void setMovieData(String[] videos) {
@@ -64,7 +62,7 @@ public class ShowMovieAdapter extends RecyclerView.Adapter<ShowMovieAdapter.Show
 
     @Override
     public void onBindViewHolder(ShowMovieAdapterViewHolder holder, int position) {
-        holder.videoLabel.setText("Trailer " + position);
+        holder.videoLabel.setText("Trailer " + (position+1));
     }
 
     @Override

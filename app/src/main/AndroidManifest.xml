@@ -23,6 +23,12 @@
             <meta-data android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
+
+        <provider
+            android:name=".data.MovieProvider"
+            android:authorities="rodab.ciencias.unam.mx.android.popularmovies"
+            android:exported="false" />
+
     </application>
 
 </manifest>

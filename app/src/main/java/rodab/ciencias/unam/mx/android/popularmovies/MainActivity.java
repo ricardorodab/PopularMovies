@@ -1,6 +1,8 @@
 package rodab.ciencias.unam.mx.android.popularmovies;
 
 import android.content.Intent;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -11,22 +13,24 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.net.URL;
 
-import utilities.Movie;
-import utilities.NetworkUtils;
-import utilities.OpenMovieJsonUtils;
+import rodab.ciencias.unam.mx.android.popularmovies.data.MovieContract;
+import rodab.ciencias.unam.mx.android.popularmovies.data.MovieOpenHelper;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.Movie;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.OpenMovieJsonUtils;
 
 public class MainActivity extends AppCompatActivity
-        implements MovieAdapter.MovieAdapterOnClickHandler {
+        implements MovieAdapter.MovieAdapterOnClickHandler{
 
     private RecyclerView mRecyclerView;
     private TextView errorMsg;
     private MovieAdapter mMoviesAdapter;
     private ProgressBar mLoading;
     private boolean popular;
+    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,16 +46,28 @@ public class MainActivity extends AppCompatActivity
         mRecyclerView.setAdapter(mMoviesAdapter);
         mLoading = (ProgressBar) findViewById(R.id.pb_loading_indicator);
         popular = true;
+
+        MovieOpenHelper dbHelper = new MovieOpenHelper(this);
+        mDb = dbHelper.getWritableDatabase();
         loadMovieData();
     }
 
-    // @TODO - Modificar el valor de bool
+    private Cursor getAllFavMovies() {
+        return mDb.query(MovieContract.RowEntry.TABLE_NAME,
+                null, null, null, null, null, null);
+    }
+
     private void loadMovieData() {
         errorMsg.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
         Boolean bool = new Boolean(popular);
         new FetchMovieTask().execute(bool);
+    }
 
+    private void loadFavoritesData() {
+        errorMsg.setVisibility(View.INVISIBLE);
+        mRecyclerView.setVisibility(View.VISIBLE);
+        new FetchFavoritesTask().execute();
     }
 
     @Override
@@ -90,7 +106,11 @@ public class MainActivity extends AppCompatActivity
                 popular = false;
                 loadMovieData();
                 return true;
-
+            case R.id.by_favorites:
+                mMoviesAdapter = new MovieAdapter(this);
+                mRecyclerView.setAdapter(mMoviesAdapter);
+                loadFavoritesData();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
 
@@ -112,15 +132,15 @@ public class MainActivity extends AppCompatActivity
             }
 
             boolean reciente = params[0].booleanValue();
-            URL weatherRequestUrl = NetworkUtils.buildUrl(reciente);
+            URL movieRequestUrl = NetworkUtils.buildUrl(reciente);
             try {
                 String jsonMovieResponse = NetworkUtils
-                        .getResponseFromHttpUrl(weatherRequestUrl);
+                        .getResponseFromHttpUrl(movieRequestUrl);
 
-               Movie[] simpleJsonWeatherData = OpenMovieJsonUtils
+               Movie[] simpleJsonVideoData = OpenMovieJsonUtils
                         .getSimpleMoviesFromJson(jsonMovieResponse);
 
-                return simpleJsonWeatherData;
+                return simpleJsonVideoData;
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -134,6 +154,7 @@ public class MainActivity extends AppCompatActivity
             if (movieData != null) {
                 errorMsg.setVisibility(View.INVISIBLE);
                 mRecyclerView.setVisibility(View.VISIBLE);
+                mMoviesAdapter.setCoursor(null);
                 mMoviesAdapter.setMovieData(movieData);
             } else {
                 showErrorMessage();
@@ -141,4 +162,26 @@ public class MainActivity extends AppCompatActivity
         }
     }
 
+   public class FetchFavoritesTask extends AsyncTask<Void, Void, Void> {
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            mLoading.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Void doInBackground(Void... params) {
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void empty) {
+            mLoading.setVisibility(View.INVISIBLE);
+            errorMsg.setVisibility(View.INVISIBLE);
+            mRecyclerView.setVisibility(View.VISIBLE);
+            mMoviesAdapter.setCoursor(getAllFavMovies());
+            mMoviesAdapter.setMovieData(null);
+        }
+    }
 }

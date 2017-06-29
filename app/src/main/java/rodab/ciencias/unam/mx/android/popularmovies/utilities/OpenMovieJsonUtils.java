@@ -1,6 +1,4 @@
-package utilities;
-
-import android.content.Context;
+package rodab.ciencias.unam.mx.android.popularmovies.utilities;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -121,6 +119,49 @@ public class OpenMovieJsonUtils {
             parsedMovieData[i] = new Movie(id,title,urlImage,synopsis,rating,date);
         }
 
+        return parsedMovieData;
+    }
+
+
+    public static Review[] getSimpleReviewLinkFromJson(String jsonStr) throws JSONException {
+        final String LIST = "results";
+
+        final String OWM_MESSAGE_CODE = "cod";
+
+        Review[] parsedMovieData = null;
+
+        JSONObject movieJson = new JSONObject(jsonStr);
+
+        /* Is there an error? */
+        if (movieJson.has(OWM_MESSAGE_CODE)) {
+            int errorCode = movieJson.getInt(OWM_MESSAGE_CODE);
+
+            switch (errorCode) {
+                case HttpURLConnection.HTTP_OK:
+                    break;
+                case HttpURLConnection.HTTP_NOT_FOUND:
+                    /* Location invalid */
+                    return null;
+                default:
+                    /* Server probably down */
+                    return null;
+            }
+        }
+
+        JSONArray movieArray = movieJson.getJSONArray(LIST);
+
+        parsedMovieData = new Review[movieArray.length()];
+
+        for (int i = 0; i < movieArray.length(); i++) {
+            String author;
+            String content;
+
+            /* Get the JSON object representing the movie */
+            JSONObject movie = movieArray.getJSONObject(i);
+            author = movie.getString("author");
+            content = movie.getString("content");
+            parsedMovieData[i] = new Review(author,content);
+        }
         return parsedMovieData;
     }
 }

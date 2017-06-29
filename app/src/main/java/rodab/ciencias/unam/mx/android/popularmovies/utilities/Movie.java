@@ -1,4 +1,4 @@
-package utilities;
+package rodab.ciencias.unam.mx.android.popularmovies.utilities;
 
 /**
  * Created by ricardo_rodab on 27/06/17.
@@ -10,16 +10,22 @@ public class Movie {
     private String title;
     private String urlImage;
     private String synopsis;
-    private double rating;
+    private double raking;
     private String date;
+    private String[] videos;
+    private Review[] reviews;
+    private boolean favorite;
 
-    public Movie(int id, String title, String urlImage, String synopsis, double rating, String date) {
+    public Movie(int id, String title, String urlImage, String synopsis, double raking, String date) {
         this.id = id;
         this.title = title;
         this.urlImage = urlImage;
         this.synopsis = synopsis;
-        this.rating = rating;
+        this.raking = raking;
         this.date = date;
+        this.videos = null;
+        this.reviews = null;
+        this.favorite = false;
     }
 
     public int getId() {
@@ -54,12 +60,12 @@ public class Movie {
         this.synopsis = synopsis;
     }
 
-    public double getRating() {
-        return rating;
+    public double getRaking() {
+        return raking;
     }
 
-    public void setRating(double rating) {
-        this.rating = rating;
+    public void setRaking(double raking) {
+        this.raking = raking;
     }
 
     public String getDate() {
@@ -70,11 +76,35 @@ public class Movie {
         this.date = date;
     }
 
+    public String[] getVideos() {
+        return videos;
+    }
+
+    public void setVideos(String[] videos) {
+        this.videos = videos;
+    }
+
+    public Review[] getReviews() {
+        return reviews;
+    }
+
+    public void setReviews(Review[] reviews) {
+        this.reviews = reviews;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(boolean favorite) {
+        this.favorite = favorite;
+    }
+
     public String toString() {
         return this.getId() + " " +
                 this.getUrlImage() + " " +
                 this.getSynopsis() + " " +
-                this.getRating() + " " +
+                this.getRaking() + " " +
                 this.getDate();
     }
 
@@ -83,7 +113,7 @@ public class Movie {
                 this.getTitle() + "-#-" +
                 this.getUrlImage() + "-#-" +
                 this.getSynopsis() + "-#-" +
-                this.getRating() + "-#-" +
+                this.getRaking() + "-#-" +
                 this.getDate());
     }
 

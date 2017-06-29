@@ -1,18 +1,18 @@
 package rodab.ciencias.unam.mx.android.popularmovies;
 
 import android.content.Context;
-import android.media.Image;
+import android.database.Cursor;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
-import utilities.Movie;
-import utilities.NetworkUtils;
+import rodab.ciencias.unam.mx.android.popularmovies.data.MovieContract;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.Movie;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
 
 /**
  * Created by ricardo_rodab on 27/06/17.
@@ -38,12 +38,18 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         @Override
         public void onClick(View v) {
             int adapterPosition = getAdapterPosition();
-            Movie dataMovie = mMovieData[adapterPosition];
+            Movie dataMovie = null;
+            if(mMovieData == null) {
+                dataMovie = getMovieCursor(adapterPosition);
+            } else {
+                dataMovie = mMovieData[adapterPosition];
+            }
             mClickHandler.onClick(dataMovie);
         }
     }
     private Movie[] mMovieData;
     private final MovieAdapterOnClickHandler mClickHandler;
+    private Cursor mCursor;
 
     public void setMovieData(Movie[] movies) {
         this.mMovieData = movies;
@@ -52,8 +58,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public MovieAdapter(MovieAdapterOnClickHandler mClickHandler) {
         this.mClickHandler = mClickHandler;
+        this.mCursor = null;
     }
 
+    public MovieAdapter(MovieAdapterOnClickHandler mClickHandler, Cursor count) {
+        this.mClickHandler = mClickHandler;
+        this.mCursor = count;
+    }
+
+    public void setCoursor(Cursor cursor) {
+        this.mCursor = cursor;
+    }
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -65,7 +80,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
+        if(this.mCursor != null || mMovieData == null) {
+            onBindViewHolderHelper(holder, position);
+            return;
+        }
         Movie movie = mMovieData[position];
+        Context context = holder.mMovieImage.getContext();
+        Picasso.with(context)
+                .load(NetworkUtils.URL_IMAGE+movie.getUrlImage())
+                .into(holder.mMovieImage);
+    }
+
+    private void onBindViewHolderHelper(MovieAdapterViewHolder holder, int position) {
+        if(!mCursor.moveToPosition(position))
+            return;
+        Movie movie = getMovieCursor(position);
         Context context = holder.mMovieImage.getContext();
         Picasso.with(context)
                 .load(NetworkUtils.URL_IMAGE+movie.getUrlImage())
@@ -74,11 +103,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public int getItemCount() {
+        if(this.mCursor != null)
+            return this.mCursor.getCount();
         if (mMovieData == null)
             return 0;
         return mMovieData.length;
     }
 
+    protected Movie getMovieCursor(int position) {
+        int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.RowEntry.COL_ID));
+        String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.RowEntry.COL_TITLE));
+        String urlImage = mCursor.getString(mCursor.getColumnIndex(MovieContract.RowEntry.COL_URL_IMAGE));
+        String synopsis = mCursor.getString(mCursor.getColumnIndex(MovieContract.RowEntry.COL_SYNOPSIS));
+        double ranking = mCursor.getFloat(mCursor.getColumnIndex(MovieContract.RowEntry.COL_RANKING));
+        String date = mCursor.getString(mCursor.getColumnIndex(MovieContract.RowEntry.COL_DATE));
+        Movie movie = new Movie(id,title,urlImage,synopsis,ranking,date);
+        movie.setFavorite(true);
+        return movie;
+    }
 
 
 }

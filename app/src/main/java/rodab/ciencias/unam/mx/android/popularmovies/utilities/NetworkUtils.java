@@ -1,4 +1,4 @@
-package utilities;
+package rodab.ciencias.unam.mx.android.popularmovies.utilities;
 
 import android.net.Uri;
 
