@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
@@ -56,7 +57,6 @@ public class ShowMovieActivity extends AppCompatActivity
     private ShowReviewsAdapter mShowReviewAdapter;
     private RecyclerView mShowRecyclerView;
     private RecyclerView getmShowRecyclerViewReviews;
-    private SQLiteDatabase mDb;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,9 +84,6 @@ public class ShowMovieActivity extends AppCompatActivity
         date = (TextView) findViewById(R.id.tv_date);
         rating = (TextView) findViewById(R.id.tv_rating);
         url = (ImageView) findViewById(R.id.imageView);
-
-        MovieOpenHelper dbHelper = new MovieOpenHelper(this);
-        mDb = dbHelper.getWritableDatabase();
 
         Intent intent = getIntent();
         if (intent != null) {
@@ -137,31 +134,31 @@ public class ShowMovieActivity extends AppCompatActivity
     }
 
     private void onClickFavorite() {
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(MovieContract.RowEntry.COL_ID, localMovie.getId());
-        contentValues.put(MovieContract.RowEntry.COL_DATE, localMovie.getDate());
-        contentValues.put(MovieContract.RowEntry.COL_RANKING, localMovie.getRaking());
-        contentValues.put(MovieContract.RowEntry.COL_SYNOPSIS, localMovie.getSynopsis());
-        contentValues.put(MovieContract.RowEntry.COL_URL_IMAGE, localMovie.getUrlImage());
-        contentValues.put(MovieContract.RowEntry.COL_TITLE, localMovie.getTitle());
-        localMovie.setFavorite(true);
-
-        mDb.insert(MovieContract.RowEntry.TABLE_NAME, null, contentValues);
+        new FavoriteSetTask(this, new AsyncTaskCompleteListener<Void>() {
+            @Override
+            public void onTaskComplete(Void result) {}
+        }).execute(this.localMovie);
     }
 
     private void onClickUnfavorite() {
-        mDb.delete(MovieContract.RowEntry.TABLE_NAME,
-                    MovieContract.RowEntry.COL_ID + "=" + localMovie.getId(), null);
-        localMovie.setFavorite(false);
+        String id = Integer.toString(localMovie.getId());
+        Uri uri = MovieContract.RowEntry.CONTENT_URI;
+        uri = uri.buildUpon().appendPath(id).build();
+        getContentResolver().delete(uri, null, null);
     }
 
     private boolean checkIfDataExist(Movie movie) {
-        String query = "SELECT * FROM " + MovieContract.RowEntry.TABLE_NAME + " WHERE " +
-                MovieContract.RowEntry.COL_ID  + "=" + movie.getId();
-        Cursor cursor = mDb.rawQuery(query,null);
-        if(cursor.getCount() <= 0)
-            return false;
-        return true;
+        try {
+            String[] args = {Integer.toString(this.localMovie.getId())};
+            Cursor cursor = getContentResolver().query(MovieContract.RowEntry.CONTENT_URI,
+                    null, MovieContract.RowEntry.COL_ID + "=?", args, null);
+            if(cursor.getCount() > 0)
+                return true;
+        } catch (Exception e) {
+            Log.e("ERROR", "Failed to get favs");
+            e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
@@ -175,8 +172,6 @@ public class ShowMovieActivity extends AppCompatActivity
                 if(item.getIcon().getConstantState().equals(drawable)) {
                     item.setIcon(R.drawable.heart_full_red);
                     onClickFavorite();
-                    Toast.makeText(getApplicationContext(),
-                            "Added to Favorites", Toast.LENGTH_SHORT).show();
                 } else {
                     item.setIcon(R.drawable.heart_empty_white);
                     onClickUnfavorite();

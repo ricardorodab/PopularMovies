@@ -7,7 +7,6 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
@@ -27,6 +26,16 @@ public class MovieProvider extends ContentProvider {
 
     // We need this in our object to help us (da'h) on the create operation.
     private MovieOpenHelper movdbh;
+    private static final UriMatcher sUriMatcher = buildUriMatcher();
+    public static final int MOVIE = 100;
+    public static final int MOVIE_ID = 101;
+
+    public static UriMatcher buildUriMatcher() {
+        UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+        uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY, MovieContract.PATH_MOVIE, MOVIE);
+        uriMatcher.addURI(MovieContract.CONTENT_AUTHORITY,MovieContract.PATH_MOVIE +"/#", MOVIE_ID);
+        return uriMatcher;
+    }
 
     /**
      * Default constructor.
@@ -70,9 +79,23 @@ public class MovieProvider extends ContentProvider {
      */
     @Nullable
     @Override
-    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection, @Nullable String[] selectionArgs, @Nullable String sortOrder) {
-        SQLiteDatabase db = movdbh.getReadableDatabase();
-        Cursor cursor = db.query(MovieContract.RowEntry.TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+    public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
+                        @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        final SQLiteDatabase db = movdbh.getReadableDatabase();
+        int match = sUriMatcher.match(uri);
+        Cursor cursor;
+        switch (match) {
+            case MOVIE:
+                cursor = db.query(MovieContract.RowEntry.TABLE_NAME, projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                break;
+            case MOVIE_ID:
+                cursor = db.query(MovieContract.RowEntry.TABLE_NAME,projection,selection,
+                        selectionArgs, null, null, null);
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknow uri: " + uri);
+        }
         cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
@@ -101,9 +124,23 @@ public class MovieProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
-        SQLiteDatabase db = movdbh.getWritableDatabase();
-        long regId = db.insert(MovieContract.RowEntry.TABLE_NAME, null, values);
-        return ContentUris.withAppendedId(MovieContract.CONTENT_URI, regId);
+        final SQLiteDatabase db = movdbh.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        Uri returnUri;
+        switch (match) {
+            case MOVIE:
+                long regId = db.insert(MovieContract.RowEntry.TABLE_NAME, null, values);
+                if( regId > 0) {
+                    returnUri =ContentUris.withAppendedId(MovieContract.RowEntry.CONTENT_URI,regId);
+                } else {
+                    throw  new android.database.SQLException("Failed to insert row into " + uri);
+                }
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknow uri: " + uri);
+        }
+        getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
     }
 
     /**
@@ -115,15 +152,23 @@ public class MovieProvider extends ContentProvider {
      * @return The number of rows deleted
      */
     @Override
-    public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
-        int numRowsDeleted;
-        if (null == selection) selection = "1";
-        SQLiteDatabase db = movdbh.getWritableDatabase();
-        numRowsDeleted = db.delete(MovieContract.RowEntry.TABLE_NAME, selection, selectionArgs);
-        if (numRowsDeleted != 0) {
+    public int delete(@NonNull Uri uri, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
+        final SQLiteDatabase db = movdbh.getWritableDatabase();
+        int match = sUriMatcher.match(uri);
+        int tasksDeleted;
+        switch (match) {
+            case MOVIE_ID:
+                String id = uri.getPathSegments().get(1);
+                tasksDeleted = db.delete(MovieContract.RowEntry.TABLE_NAME,"id_movie=?",new String[]{id});
+                break;
+            default:
+                throw new UnsupportedOperationException("Unknown uri: " + uri);
+        }
+        if (tasksDeleted != 0) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        return numRowsDeleted;
+        return tasksDeleted;
     }
 
     /**
@@ -136,7 +181,8 @@ public class MovieProvider extends ContentProvider {
      * @return The number of rows updated
      */
     @Override
-    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
+    public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection,
+                      @Nullable String[] selectionArgs) {
         return 0;
     }
 } //End of MovieProvider.java

@@ -3,26 +3,24 @@ package rodab.ciencias.unam.mx.android.popularmovies;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
-import android.widget.ProgressBar;
 
 import java.net.URL;
 
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.Movie;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.MovieTypeEnum;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.OpenMovieJsonUtils;
-import rodab.ciencias.unam.mx.android.popularmovies.MainActivity;
 
 /**
  * Created by ricardo_rodab on 29/06/17.
  */
 
-public class FetchMovieTask extends AsyncTask<Boolean, Void, Movie[]> {
+public class FetchMovieTask extends AsyncTask<MovieTypeEnum, Void, Movie[]> {
 
     private Context context;
     private AsyncTaskCompleteListener<Movie[]> listener;
 
-    public FetchMovieTask(Context ctx, AsyncTaskCompleteListener<Movie[]> listener)
-    {
+    public FetchMovieTask(Context ctx, AsyncTaskCompleteListener<Movie[]> listener) {
         this.context = ctx;
         this.listener = listener;
     }
@@ -34,13 +32,14 @@ public class FetchMovieTask extends AsyncTask<Boolean, Void, Movie[]> {
     }
 
     @Override
-    protected Movie[] doInBackground(Boolean... params) {
+    protected Movie[] doInBackground(MovieTypeEnum... params) {
         if (params.length == 0) {
             return null;
         }
 
-        boolean reciente = params[0].booleanValue();
-        URL movieRequestUrl = NetworkUtils.buildUrl(reciente, context.getString(R.string.THE_MOVIE_DB_API_TOKEN));
+        MovieTypeEnum typeMovie = params[0];
+        boolean popular = (typeMovie == MovieTypeEnum.POPULAR);
+        URL movieRequestUrl = NetworkUtils.buildUrl(popular, context.getString(R.string.THE_MOVIE_DB_API_TOKEN));
         try {
             String jsonMovieResponse = NetworkUtils
                     .getResponseFromHttpUrl(movieRequestUrl);
@@ -62,7 +61,7 @@ public class FetchMovieTask extends AsyncTask<Boolean, Void, Movie[]> {
         if (movieData != null) {
             ((MainActivity) this.context).errorMsg.setVisibility(View.INVISIBLE);
             ((MainActivity) this.context).mRecyclerView.setVisibility(View.VISIBLE);
-            ((MainActivity) this.context).mMoviesAdapter.setCoursor(null);
+            ((MainActivity) this.context).mMoviesAdapter.setCursor(null);
             ((MainActivity) this.context).mMoviesAdapter.setMovieData(movieData);
         } else {
             ((MainActivity) this.context).showErrorMessage();

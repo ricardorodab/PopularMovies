@@ -19,6 +19,7 @@ import java.net.URL;
 import rodab.ciencias.unam.mx.android.popularmovies.data.MovieContract;
 import rodab.ciencias.unam.mx.android.popularmovies.data.MovieOpenHelper;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.Movie;
+import rodab.ciencias.unam.mx.android.popularmovies.utilities.MovieTypeEnum;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.NetworkUtils;
 import rodab.ciencias.unam.mx.android.popularmovies.utilities.OpenMovieJsonUtils;
 
@@ -41,8 +42,9 @@ public class MainActivity extends AppCompatActivity
     protected TextView errorMsg;
     protected MovieAdapter mMoviesAdapter;
     protected ProgressBar mLoading;
-    protected boolean popular;
-    protected SQLiteDatabase mDb;
+    protected MovieTypeEnum popular;
+
+    private static final String QUERY_KEY = "movies_query_show";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -57,25 +59,45 @@ public class MainActivity extends AppCompatActivity
         mMoviesAdapter = new MovieAdapter(this);
         mRecyclerView.setAdapter(mMoviesAdapter);
         mLoading = (ProgressBar) findViewById(R.id.pb_loading_indicator);
-        popular = true;
-
-        MovieOpenHelper dbHelper = new MovieOpenHelper(this);
-        mDb = dbHelper.getWritableDatabase();
-        loadMovieData();
+        popular = MovieTypeEnum.POPULAR;
+        if(savedInstanceState != null) {
+            if(savedInstanceState.containsKey(QUERY_KEY)) {
+                String viewQuery = savedInstanceState.getString(QUERY_KEY);
+                if(viewQuery.equals(MovieTypeEnum.POPULAR.toString())) {
+                    popular = MovieTypeEnum.POPULAR;
+                } else if(viewQuery.equals(MovieTypeEnum.TOP.toString())) {
+                    popular = MovieTypeEnum.TOP;
+                } else {
+                    popular = MovieTypeEnum.FAVORITE;
+                }
+            }
+        }
+        if(popular != MovieTypeEnum.FAVORITE) {
+            loadMovieData();
+        } else {
+            loadFavoritesData();
+        }
     }
 
-    //We get all the information in a Cursor (in the DB).
-    protected Cursor getAllFavMovies() {
-        return mDb.query(MovieContract.RowEntry.TABLE_NAME,
-                null, null, null, null, null, null);
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putString(QUERY_KEY, popular.toString());
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        if(popular == MovieTypeEnum.FAVORITE) {
+            loadFavoritesData();
+        }
     }
 
     //The data is loaded in a Task.
     private void loadMovieData() {
         errorMsg.setVisibility(View.INVISIBLE);
         mRecyclerView.setVisibility(View.VISIBLE);
-        Boolean bool = new Boolean(popular);
-        new FetchMovieTask(this, new FetchMovieTaskCompleteListener()).execute(bool);
+        new FetchMovieTask(this, new FetchMovieTaskCompleteListener()).execute(popular);
     }
 
     //This private method start a task to get the db data.
@@ -116,19 +138,20 @@ public class MainActivity extends AppCompatActivity
             case R.id.popular:
                 mMoviesAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mMoviesAdapter);
-                popular = true;
+                popular = MovieTypeEnum.POPULAR;
                 loadMovieData();
                 return true;
 
             case R.id.rated:
                 mMoviesAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mMoviesAdapter);
-                popular = false;
+                popular = MovieTypeEnum.TOP;
                 loadMovieData();
                 return true;
             case R.id.by_favorites:
                 mMoviesAdapter = new MovieAdapter(this);
                 mRecyclerView.setAdapter(mMoviesAdapter);
+                popular = MovieTypeEnum.FAVORITE;
                 loadFavoritesData();
                 return true;
             default:

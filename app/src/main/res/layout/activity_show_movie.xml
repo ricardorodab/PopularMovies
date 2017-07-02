@@ -22,7 +22,8 @@
             android:textSize="@dimen/big_tittle"
             android:textColor="@color/colorWhite"
             android:padding="@dimen/medium_tittle"
-            android:background="@color/beautiful_unknow_color" />
+            android:background="@color/beautiful_unknow_color"
+            tools:text="Titulo"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -48,14 +49,16 @@
                     android:layout_marginTop="2sp"
                     android:layout_weight="1.00"
                     android:padding="2sp"
-                    android:textSize="@dimen/twenty_sp" />
+                    android:textSize="@dimen/twenty_sp"
+                    tools:text="10/10"/>
 
                 <TextView
                     android:id="@+id/tv_date"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="1.67"
-                    android:textSize="@dimen/medium_tittle" />
+                    android:textSize="@dimen/medium_tittle"
+                    tools:text="10-Sep-2014"/>
             </LinearLayout>
 
 
@@ -67,7 +70,8 @@
             android:layout_height="wrap_content"
             android:padding="2sp"
             android:layout_weight="1.00"
-            android:text="" />
+            android:text=""
+            tools:text="Parangaricutirimicuaro"/>
 
         <android.support.v7.widget.RecyclerView
             android:id="@+id/rv_videos"

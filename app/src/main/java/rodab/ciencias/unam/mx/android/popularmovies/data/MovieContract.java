@@ -27,10 +27,12 @@ public final class MovieContract {
      */
     public static final String uri = "content://" + CONTENT_AUTHORITY;
 
+    public static final String PATH_MOVIE = "movie";
+
     /**
      * To get the conexion to de database, we use a Uri object parsered from @uri.
      */
-    public static final Uri CONTENT_URI = Uri.parse(uri);
+    public static final Uri BASE_CONTENT_URI = Uri.parse(uri);
 
     // We don't want to create an instance for this class.
     private MovieContract() {}
@@ -40,6 +42,9 @@ public final class MovieContract {
      */
     public static final class RowEntry implements BaseColumns {
 
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_MOVIE).build();
+
         /**
          * This is the constant for the name movie in the db.
          */
@@ -48,7 +53,12 @@ public final class MovieContract {
         /**
          * This is the constant for the (unique) id movie in the db.
          */
-        public static final String COL_ID = "id";
+        public static final String ID = "_ID";
+
+        /**
+         * This is the constant for the (unique) id movie in the db.
+         */
+        public static final String COL_ID = "id_movie";
 
         /**
          * This is the constant for the title movie in the db.

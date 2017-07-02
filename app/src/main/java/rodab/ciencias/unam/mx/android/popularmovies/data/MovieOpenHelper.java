@@ -38,10 +38,11 @@ public class MovieOpenHelper extends SQLiteOpenHelper {
      */
     private static final String MOVIE_TABLE_CREATE =
                     "CREATE TABLE " + MOVIE_TABLE_NAME + " (" +
-                     MovieContract.RowEntry.COL_ID + " INTEGER PRIMARY KEY, " +
+                     MovieContract.RowEntry.ID + " INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL," +
+                     MovieContract.RowEntry.COL_ID + " INTEGER, " +
                      MovieContract.RowEntry.COL_TITLE + " TEXT, " +
                      MovieContract.RowEntry.COL_URL_IMAGE + " TEXT, " +
-                     MovieContract.RowEntry.COL_SYNOPSIS + " TEXT," +
+                     MovieContract.RowEntry.COL_SYNOPSIS + " TEXT, " +
                      MovieContract.RowEntry.COL_RANKING  + " FLOAT, " +
                      MovieContract.RowEntry.COL_DATE + " TEXT );";
 

@@ -48,7 +48,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
             int adapterPosition = getAdapterPosition();
             Movie dataMovie = null;
             if(mMovieData == null) {
-                dataMovie = getMovieCursor(adapterPosition);
+                dataMovie =  getMovieCursor(adapterPosition);
             } else {
                 dataMovie = mMovieData[adapterPosition];
             }
@@ -74,7 +74,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         this.mCursor = count;
     }
 
-    public void setCoursor(Cursor cursor) {
+    public void setCursor(Cursor cursor) {
         this.mCursor = cursor;
     }
 
@@ -102,7 +102,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private void onBindViewHolderHelper(MovieAdapterViewHolder holder, int position) {
         if(!mCursor.moveToPosition(position))
             return;
-        Movie movie = getMovieCursor(position);
+        Movie movie = getMovieCursor();
         Context context = holder.mMovieImage.getContext();
         Picasso.with(context)
                 .load(NetworkUtils.URL_IMAGE+movie.getUrlImage())
@@ -118,7 +118,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         return mMovieData.length;
     }
 
-    protected Movie getMovieCursor(int position) {
+    protected Movie getMovieCursor() {
         int id = mCursor.getInt(mCursor.getColumnIndex(MovieContract.RowEntry.COL_ID));
         String title = mCursor.getString(mCursor.getColumnIndex(MovieContract.RowEntry.COL_TITLE));
         String urlImage = mCursor.getString(mCursor.getColumnIndex(MovieContract.RowEntry.COL_URL_IMAGE));
@@ -128,6 +128,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         Movie movie = new Movie(id,title,urlImage,synopsis,ranking,date);
         movie.setFavorite(true);
         return movie;
+    }
+
+    protected Movie getMovieCursor(int position) {
+        if(!mCursor.moveToPosition(position))
+            return null;
+        return getMovieCursor();
     }
 
 
